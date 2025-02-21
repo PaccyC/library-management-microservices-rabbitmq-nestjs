@@ -1,4 +1,52 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Book } from 'src/entities/book.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class BookService {}
+export class BookService {
+
+    constructor (
+        @InjectRepository(Book)
+        private readonly bookRepository: Repository<Book>
+){}
+
+async getBook (bookId: string) : Promise<Book> {
+    try {
+        
+        const book= await this.bookRepository.findOne({
+            where:{
+                id: bookId
+            }
+        
+        })
+        if(!book) throw new NotFoundException("Book not found")
+        return book
+    } catch (error) {
+        console.log(error);
+        
+    }
+
+}
+
+async getBooks(): Promise<Book[]>{
+    return await this.bookRepository.find()
+}
+
+async isBookInStock(bookId: string, quantity: number) : Promise <boolean> {
+    const book = await this.bookRepository.findOne({
+        where:{
+            id:bookId
+        }
+    })
+    return  quantity <= book.stock
+}
+
+async updateBookStock(bookId: string, quantity: number){
+    const book= await this.bookRepository.findOne({
+        where:{
+            id: bookId
+        }
+    })
+}
+}
