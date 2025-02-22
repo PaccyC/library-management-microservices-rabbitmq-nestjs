@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
-import { CustomerController } from './customer.controller';
-import { CustomerService } from './customer.service';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from 'src/entities/customer.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 @Module({
-  controllers: [CustomerController],
-  providers: [CustomerService],
+  providers: [AuthService],
+  controllers: [AuthController],
   imports:[
+    PassportModule,
+    JwtModule.register({
+    secret:process.env.JWT_SECRET_KEY,
+    signOptions:{expiresIn:'2d'}
+  }),
     ClientsModule.register([
       {
           name: "BOOK_SERVICE",
@@ -44,8 +52,6 @@ import { Customer } from 'src/entities/customer.entity';
       }
   ]),
   TypeOrmModule.forFeature([Customer])
-  ],
-  exports:[CustomerService]
-  
+  ]
 })
-export class CustomerModule {}
+export class AuthModule {}
