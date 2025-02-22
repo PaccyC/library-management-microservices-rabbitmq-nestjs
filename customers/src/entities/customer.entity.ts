@@ -16,4 +16,7 @@ export class Customer{
 
     @Column()
     phone: string;
+
+    @Column()
+    password: string
 }

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { BookService } from './book.service';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { CreateBookDto } from 'src/dtos';
 
 const GET_BOOK="getBook"
 const IS_BOOK_IN_STOCK= "isBookInStock"
@@ -31,6 +32,13 @@ export class BookController {
         const {bookId,quantity}= data;
         return await this.bookService.decreaseBookStock(bookId,quantity)
     }
+
+    @Post("/new")
+    async handleAddBook(@Body() createBookDto: CreateBookDto){
+        return await this.bookService.addBook(createBookDto);
+    }
+
+    
 
     @Patch("/:id")
     async handleIncreaseStock(@Param("id") bookId: string, @Body()  quantity: number){

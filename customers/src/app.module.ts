@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from './entities/customer.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,9 +23,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       entities: [Customer],
       synchronize: true
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-  
+
 })
-export class AppModule {}
+export class AppModule { }

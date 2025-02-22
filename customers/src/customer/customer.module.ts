@@ -4,7 +4,6 @@ import { CustomerService } from './customer.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from 'src/entities/customer.entity';
-
 @Module({
   controllers: [CustomerController],
   providers: [CustomerService],
