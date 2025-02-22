@@ -1,7 +1,8 @@
-import { BadRequestException, Controller, Inject, NotFoundException, Post, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, Get, HttpCode, HttpStatus, Inject, InternalServerErrorException, NotFoundException, Param, Post, Response, ServiceUnavailableException } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateOrderDto } from 'src/dtos';
+import axios from 'axios';
 
 
 
@@ -45,6 +46,36 @@ export class OrderController {
         const order= await this.orderService.createOrder(createOrderDto)
 
         this.bookClient.emit(DECREASE_STOCK,{book,quantity})
+    }
+
+    @Delete("/:id")
+    @HttpCode(HttpStatus.OK)
+    async handleDeleteOrder(
+        @Param("id") orderId: string,
+        @Response() res: any
+    ){
+
+        const order= await this.orderService.getOrder(orderId)
+        const {bookId,quantity}= order
+        await this.orderService.deleteOrder(orderId)
+
+        try {
+            // Add quantity back to the book when order is cancelled
+            await axios.patch(`http://localhost:5000/book/${bookId}`,{
+                quantity
+            })
+
+            return res.status(200).json({
+                statusCode: HttpStatus.OK,
+                message: "Order deleted Successfully"
+            })
+
+        } catch (error: any) {
+            console.error('Error updating book stock:', error.message);
+
+            await this.orderService.createOrder(order);
+            throw new InternalServerErrorException("Error updating book stock")
+        }
     }
 
 

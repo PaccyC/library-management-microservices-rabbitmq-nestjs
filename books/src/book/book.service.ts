@@ -42,11 +42,28 @@ async isBookInStock(bookId: string, quantity: number) : Promise <boolean> {
     return  quantity <= book.stock
 }
 
-async updateBookStock(bookId: string, quantity: number){
+
+async decreaseBookStock(bookId: string, quantity: number):  Promise<Book>{
     const book= await this.bookRepository.findOne({
         where:{
             id: bookId
         }
     })
+
+    book.stock -= quantity;
+    const updatedBook= await this.bookRepository.save(book);
+    return updatedBook;
+}
+
+async increaseBookStock(bookId: string, addedQuantity:number): Promise<Book>{
+    const book= await this.bookRepository.findOne({
+        where:{
+            id: bookId
+        }
+    })
+
+    book.stock += addedQuantity;
+    const updatedBook= await this.bookRepository.save(book);
+    return updatedBook;
 }
 }

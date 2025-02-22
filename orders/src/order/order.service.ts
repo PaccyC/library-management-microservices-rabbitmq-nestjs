@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateOrderDto } from 'src/dtos';
 import { Order } from 'src/entities/order.entity';
@@ -50,6 +50,27 @@ export class OrderService {
         }
         catch(error:any){
             console.log(error)
+        }
+    }
+
+    async deleteOrder (orderId: string) : Promise<{statusCode: HttpStatus, message: string}>{
+        try {
+            const order= await this.orderRepository.findOne({
+                where:{
+                    id: orderId
+                }
+            })
+            if(!order){
+                throw new NotFoundException("Order not found")
+            }
+            await this.orderRepository.delete(order);
+
+            return {
+                statusCode: HttpStatus.OK,
+                message: "Order deleted successfully"
+            }
+        } catch (error) {
+           console.log(error)
         }
     }
     
