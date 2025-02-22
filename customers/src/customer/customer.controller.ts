@@ -1,4 +1,4 @@
-import { Controller,Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
@@ -13,10 +13,5 @@ export class CustomerController {
     ){}
 
 
-    @MessagePattern(GET_CUSTOMER)
-    async handleGetCustomer( @Payload() data : {customerId: string}){
 
-        const {customerId}= data
-        return this.customerService.getCustomer(customerId)
-    }
 }
